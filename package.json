@@ -1,0 +1,84 @@
+{
+  "name": "paste-image-ocr",
+  "displayName": "Paste Image OCR",
+  "description": "Paste or drop an image into a dedicated panel and extract text with local OCR (Tesseract.js). No API keys, no cloud.",
+  "version": "0.1.0",
+  "publisher": "HabibAliAtFolio3",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Formatters"
+  ],
+  "keywords": [
+    "ocr",
+    "tesseract",
+    "image",
+    "paste",
+    "screenshot",
+    "text extraction"
+  ],
+  "activationEvents": [
+    "onView:pasteImageOcr.mainView",
+    "onCommand:pasteImageOcr.openPanel"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "pasteImageOcr",
+          "title": "Paste Image OCR",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "pasteImageOcr": [
+        {
+          "type": "webview",
+          "id": "pasteImageOcr.mainView",
+          "name": "Image to Text"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "pasteImageOcr.openPanel",
+        "title": "Paste Image OCR: Open Panel",
+        "icon": "$(file-media)"
+      },
+      {
+        "command": "pasteImageOcr.insertResult",
+        "title": "Paste Image OCR: Insert Result into Editor"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package",
+    "publish:ovsx": "ovsx publish"
+  },
+  "dependencies": {
+    "tesseract.js": "^5.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.2.1",
+    "ovsx": "^0.10.1",
+    "typescript": "^5.3.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HabibAliAtFolio3/paste-image-ocr.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HabibAliAtFolio3/paste-image-ocr/issues"
+  },
+  "homepage": "https://github.com/HabibAliAtFolio3/paste-image-ocr#readme"
+}
