@@ -18,12 +18,12 @@ A simple VS Code / Cursor / Open VSX extension that opens a **dedicated sidebar 
 Search for **Paste Image OCR** in Cursor / VSCodium, or:
 
 ```bash
-ovsx get HabibAliAtFolio3.paste-image-ocr
+ovsx get ahmed404abd.paste-image-ocr
 ```
 
 ### From VSIX
 
-1. Download the `.vsix` from [Releases](https://github.com/HabibAliAtFolio3/paste-image-ocr/releases)
+1. Download the `.vsix` from [Releases](https://github.com/ahmed404abd/paste-image-ocr/releases)
 2. VS Code / Cursor → **Extensions: Install from VSIX…**
 
 ### From source
