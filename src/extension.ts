@@ -12,17 +12,17 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("pasteImageOcr.openPanel", async () => {
-      await vscode.commands.executeCommand("pasteImageOcr.mainView.focus");
+    vscode.commands.registerCommand("textifyImage.openPanel", async () => {
+      await vscode.commands.executeCommand("textifyImage.mainView.focus");
     })
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("pasteImageOcr.insertResult", async () => {
+    vscode.commands.registerCommand("textifyImage.insertResult", async () => {
       const text = provider.getLastResult();
       const editor = vscode.window.activeTextEditor;
       if (!text) {
-        vscode.window.showInformationMessage("No OCR result yet. Paste an image in the Paste Image OCR panel first.");
+        vscode.window.showInformationMessage("No OCR result yet. Paste an image in the Textify Image panel first.");
         return;
       }
       if (!editor) {

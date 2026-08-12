@@ -1,4 +1,4 @@
-# Paste Image OCR
+# Textify Image
 
 A simple VS Code / Cursor / Open VSX extension that opens a **dedicated sidebar panel** (Thunder Client–style). Paste or drop an image and extract text with **local OCR** via [Tesseract.js](https://github.com/naptha/tesseract.js).
 
@@ -15,15 +15,15 @@ A simple VS Code / Cursor / Open VSX extension that opens a **dedicated sidebar 
 
 ### From Open VSX
 
-Search for **Paste Image OCR** in Cursor / VSCodium, or:
+Search for **Textify Image** in Cursor / VSCodium, or:
 
 ```bash
-ovsx get ahmed404abd.paste-image-ocr
+ovsx get ahmed404abd.textify-image
 ```
 
 ### From VSIX
 
-1. Download the `.vsix` from [Releases](https://github.com/ahmed404abd/paste-image-ocr/releases)
+1. Download the `.vsix` from [Releases](https://github.com/ahmed404abd/textify-image/releases)
 2. VS Code / Cursor → **Extensions: Install from VSIX…**
 
 ### From source
@@ -31,13 +31,13 @@ ovsx get ahmed404abd.paste-image-ocr
 ```bash
 npm install
 npm run compile
-npx vsce package --no-dependencies
+npx vsce package
 # then Install from VSIX
 ```
 
 ## Usage
 
-1. Click the **Paste Image OCR** icon in the activity bar (or run **Paste Image OCR: Open Panel**).
+1. Click the **Textify Image** icon in the activity bar (or run **Textify Image: Open Panel**).
 2. Copy a screenshot / image to the clipboard.
 3. Click the drop zone and press **Ctrl+V** (or drop / choose a file).
 4. Wait for OCR, then **Copy** or **Insert into editor**.

@@ -8,7 +8,7 @@ type IncomingMessage =
   | { type: "ready" };
 
 export class OcrPanelProvider implements vscode.WebviewViewProvider {
-  public static readonly viewType = "pasteImageOcr.mainView";
+  public static readonly viewType = "textifyImage.mainView";
 
   private view?: vscode.WebviewView;
   private lastResult = "";
@@ -79,7 +79,7 @@ export class OcrPanelProvider implements vscode.WebviewViewProvider {
     const csp = [
       `default-src 'none'`,
       `style-src ${webview.cspSource} 'unsafe-inline'`,
-      `script-src 'nonce-pasteImageOcr'`,
+      `script-src 'nonce-textifyImage'`,
       `img-src ${webview.cspSource} data: blob:`,
     ].join("; ");
 
@@ -89,7 +89,7 @@ export class OcrPanelProvider implements vscode.WebviewViewProvider {
   <meta charset="UTF-8" />
   <meta http-equiv="Content-Security-Policy" content="${csp}" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Paste Image OCR</title>
+  <title>Textify Image</title>
   <style>
     :root {
       color-scheme: light dark;
@@ -212,7 +212,7 @@ export class OcrPanelProvider implements vscode.WebviewViewProvider {
   </style>
 </head>
 <body>
-  <h1>Paste Image OCR</h1>
+  <h1>Textify Image</h1>
   <div
     id="dropzone"
     class="dropzone"
@@ -243,7 +243,7 @@ export class OcrPanelProvider implements vscode.WebviewViewProvider {
   </div>
   <p class="hint">Runs fully offline with Tesseract.js. For long text, crop or zoom the image for better accuracy.</p>
 
-  <script nonce="pasteImageOcr">
+  <script nonce="textifyImage">
     const vscode = acquireVsCodeApi();
     const dropzone = document.getElementById('dropzone');
     const fileInput = document.getElementById('file');

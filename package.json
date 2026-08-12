@@ -1,6 +1,6 @@
 {
-  "name": "paste-image-ocr",
-  "displayName": "Paste Image OCR",
+  "name": "textify-image",
+  "displayName": "Textify Image",
   "description": "Paste or drop an image into a dedicated panel and extract text with local OCR (Tesseract.js). No API keys, no cloud.",
   "version": "0.1.0",
   "publisher": "ahmed404abd",
@@ -18,41 +18,42 @@
     "image",
     "paste",
     "screenshot",
-    "text extraction"
+    "text extraction",
+    "textify"
   ],
   "activationEvents": [
-    "onView:pasteImageOcr.mainView",
-    "onCommand:pasteImageOcr.openPanel"
+    "onView:textifyImage.mainView",
+    "onCommand:textifyImage.openPanel"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "pasteImageOcr",
-          "title": "Paste Image OCR",
+          "id": "textifyImage",
+          "title": "Textify Image",
           "icon": "media/icon.svg"
         }
       ]
     },
     "views": {
-      "pasteImageOcr": [
+      "textifyImage": [
         {
           "type": "webview",
-          "id": "pasteImageOcr.mainView",
+          "id": "textifyImage.mainView",
           "name": "Image to Text"
         }
       ]
     },
     "commands": [
       {
-        "command": "pasteImageOcr.openPanel",
-        "title": "Paste Image OCR: Open Panel",
+        "command": "textifyImage.openPanel",
+        "title": "Textify Image: Open Panel",
         "icon": "$(file-media)"
       },
       {
-        "command": "pasteImageOcr.insertResult",
-        "title": "Paste Image OCR: Insert Result into Editor"
+        "command": "textifyImage.insertResult",
+        "title": "Textify Image: Insert Result into Editor"
       }
     ]
   },
@@ -75,10 +76,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ahmed404abd/paste-image-ocr.git"
+    "url": "https://github.com/ahmed404abd/textify-image.git"
   },
   "bugs": {
-    "url": "https://github.com/ahmed404abd/paste-image-ocr/issues"
+    "url": "https://github.com/ahmed404abd/textify-image/issues"
   },
-  "homepage": "https://github.com/ahmed404abd/paste-image-ocr#readme"
+  "homepage": "https://github.com/ahmed404abd/textify-image#readme"
 }
