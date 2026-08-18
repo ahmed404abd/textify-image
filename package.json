@@ -2,9 +2,14 @@
   "name": "textify-image",
   "displayName": "Textify Image",
   "description": "Paste or drop an image into a dedicated panel and extract text with local OCR (Tesseract.js). No API keys, no cloud.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "ahmed404abd",
   "license": "MIT",
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#07090c",
+    "theme": "dark"
+  },
   "engines": {
     "vscode": "^1.85.0"
   },

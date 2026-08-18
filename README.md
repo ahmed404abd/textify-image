@@ -1,6 +1,10 @@
 # Textify Image
 
-A simple VS Code / Cursor / Open VSX extension that opens a **dedicated sidebar panel** (Thunder Client–style). Paste or drop an image and extract text with **local OCR** via [Tesseract.js](https://github.com/naptha/tesseract.js).
+<p align="center">
+  <img src="media/cover.png" alt="Textify Image" width="520" />
+</p>
+
+Paste or drop an image into a dedicated sidebar panel and extract text with **local OCR** via [Tesseract.js](https://github.com/naptha/tesseract.js).
 
 **No API keys. No cloud. No cost.**
 
@@ -10,6 +14,7 @@ A simple VS Code / Cursor / Open VSX extension that opens a **dedicated sidebar 
 - Paste (`Ctrl+V` / `Cmd+V`), drag-and-drop, or pick a file
 - Offline OCR (English by default)
 - **Copy** result or **Insert into editor**
+- Dark cyan / red scan UI with a live scan-line while OCR runs
 
 ## Install
 

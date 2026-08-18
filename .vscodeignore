@@ -7,6 +7,7 @@ tsconfig.json
 **/*.map
 *.vsix
 .github/**
+scripts/**
 node_modules/@types/**
 node_modules/typescript/**
 node_modules/@vscode/**

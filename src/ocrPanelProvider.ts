@@ -27,7 +27,7 @@ export class OcrPanelProvider implements vscode.WebviewViewProvider {
     this.view = webviewView;
     webviewView.webview.options = {
       enableScripts: true,
-      localResourceRoots: [this.extensionUri],
+      localResourceRoots: [vscode.Uri.joinPath(this.extensionUri, "media")],
     };
     webviewView.webview.html = this.getHtml(webviewView.webview);
 
@@ -60,7 +60,7 @@ export class OcrPanelProvider implements vscode.WebviewViewProvider {
       return;
     }
 
-    this.view.webview.postMessage({ type: "status", status: "working", message: "Running OCR…" });
+    this.view.webview.postMessage({ type: "status", status: "working", message: "Scanning image…" });
 
     try {
       const match = /^data:image\/[a-zA-Z0-9+.-]+;base64,(.+)$/.exec(imageBase64);
@@ -76,11 +76,14 @@ export class OcrPanelProvider implements vscode.WebviewViewProvider {
   }
 
   private getHtml(webview: vscode.Webview): string {
+    const coverUri = webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, "media", "cover.png"));
+    const iconUri = webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, "media", "icon.png"));
     const csp = [
       `default-src 'none'`,
       `style-src ${webview.cspSource} 'unsafe-inline'`,
       `script-src 'nonce-textifyImage'`,
       `img-src ${webview.cspSource} data: blob:`,
+      `font-src ${webview.cspSource}`,
     ].join("; ");
 
     return `<!DOCTYPE html>
@@ -92,66 +95,168 @@ export class OcrPanelProvider implements vscode.WebviewViewProvider {
   <title>Textify Image</title>
   <style>
     :root {
-      color-scheme: light dark;
-      --gap: 10px;
-      --radius: 6px;
-      --border: 1px solid var(--vscode-panel-border, #444);
-      --bg: var(--vscode-editor-background);
-      --fg: var(--vscode-editor-foreground);
-      --muted: var(--vscode-descriptionForeground);
-      --accent: var(--vscode-button-background);
-      --accent-fg: var(--vscode-button-foreground);
-      --input-bg: var(--vscode-input-background);
-      --input-border: var(--vscode-input-border, #555);
+      --bg: #07090c;
+      --bg-elev: #0d1117;
+      --bg-input: #10151c;
+      --cyan: #5ec8ff;
+      --cyan-dim: #3aa8dd;
+      --red: #e23d48;
+      --red-soft: #ff6b73;
+      --text: #eaf6ff;
+      --muted: #7d8c9a;
+      --line: rgba(94, 200, 255, 0.22);
+      --radius: 10px;
+      --gap: 12px;
     }
     * { box-sizing: border-box; }
+    html, body {
+      height: 100%;
+    }
     body {
       margin: 0;
       padding: 12px;
-      font-family: var(--vscode-font-family);
-      font-size: var(--vscode-font-size);
-      color: var(--fg);
-      background: var(--bg);
+      font-family: "Segoe UI", Inter, system-ui, sans-serif;
+      font-size: 12.5px;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 280px at 50% -80px, rgba(94, 200, 255, 0.08), transparent 60%),
+        radial-gradient(700px 240px at 90% 120%, rgba(226, 61, 72, 0.08), transparent 55%),
+        var(--bg);
       display: flex;
       flex-direction: column;
       gap: var(--gap);
-      min-height: 100vh;
+      min-height: 100%;
     }
-    h1 {
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand img {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      box-shadow: 0 0 18px rgba(94, 200, 255, 0.18);
+      object-fit: cover;
+    }
+    .brand h1 {
       margin: 0;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      line-height: 1.1;
+    }
+    .brand h1 span { color: var(--cyan); }
+    .brand p {
+      margin: 2px 0 0;
       color: var(--muted);
+      font-size: 11px;
+    }
+    .cover {
+      width: 100%;
+      max-height: 148px;
+      object-fit: cover;
+      object-position: center top;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      display: block;
+      box-shadow: 0 0 24px rgba(226, 61, 72, 0.08), 0 0 18px rgba(94, 200, 255, 0.08);
     }
     .dropzone {
-      border: 1px dashed var(--input-border);
+      position: relative;
+      border: 1px dashed rgba(94, 200, 255, 0.35);
       border-radius: var(--radius);
-      padding: 20px 12px;
+      padding: 22px 12px 18px;
       text-align: center;
-      background: var(--input-bg);
+      background: linear-gradient(180deg, rgba(94, 200, 255, 0.05), rgba(13, 17, 23, 0.9));
       cursor: pointer;
       outline: none;
-      transition: border-color 0.15s ease, background 0.15s ease;
+      overflow: hidden;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .dropzone::before,
+    .dropzone::after {
+      content: "";
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--cyan);
+      pointer-events: none;
+    }
+    .dropzone::before {
+      top: 8px;
+      left: 8px;
+      border-right: 0;
+      border-bottom: 0;
+    }
+    .dropzone::after {
+      top: 8px;
+      right: 8px;
+      border-left: 0;
+      border-bottom: 0;
+    }
+    .dropzone .corners {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .dropzone .corners span {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--cyan);
+    }
+    .dropzone .corners span:nth-child(1) {
+      bottom: 8px;
+      left: 8px;
+      border-right: 0;
+      border-top: 0;
+    }
+    .dropzone .corners span:nth-child(2) {
+      bottom: 8px;
+      right: 8px;
+      border-left: 0;
+      border-top: 0;
+    }
+    .scanline {
+      position: absolute;
+      left: 6%;
+      right: 6%;
+      height: 2px;
+      background: var(--red);
+      box-shadow: 0 0 12px var(--red), 0 0 24px rgba(226, 61, 72, 0.55);
+      opacity: 0;
+      top: 50%;
+      pointer-events: none;
+    }
+    .dropzone.working .scanline {
+      opacity: 1;
+      animation: scan 1.4s ease-in-out infinite;
+    }
+    @keyframes scan {
+      0% { top: 18%; }
+      50% { top: 78%; }
+      100% { top: 18%; }
     }
     .dropzone.dragover,
     .dropzone:focus {
-      border-color: var(--accent);
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 1px rgba(94, 200, 255, 0.25), 0 0 22px rgba(94, 200, 255, 0.12);
     }
     .dropzone p {
       margin: 4px 0;
       color: var(--muted);
     }
-    .dropzone strong { color: var(--fg); }
+    .dropzone strong { color: var(--cyan); }
     .preview {
       display: none;
       max-width: 100%;
-      max-height: 160px;
+      max-height: 140px;
       object-fit: contain;
-      border-radius: var(--radius);
-      border: var(--border);
-      margin: 8px auto 0;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      margin: 10px auto 0;
     }
     .preview.visible { display: block; }
     .row {
@@ -160,59 +265,82 @@ export class OcrPanelProvider implements vscode.WebviewViewProvider {
       gap: 8px;
       align-items: center;
     }
-    label { color: var(--muted); font-size: 12px; }
+    label { color: var(--muted); font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; }
     select, button, textarea {
       font: inherit;
-      border-radius: var(--radius);
+      border-radius: 8px;
     }
     select {
-      background: var(--input-bg);
-      color: var(--fg);
-      border: 1px solid var(--input-border);
-      padding: 4px 8px;
+      background: var(--bg-input);
+      color: var(--text);
+      border: 1px solid var(--line);
+      padding: 6px 8px;
     }
     button {
-      background: var(--accent);
-      color: var(--accent-fg);
+      background: linear-gradient(180deg, var(--cyan), var(--cyan-dim));
+      color: #041018;
       border: none;
-      padding: 6px 12px;
+      padding: 7px 12px;
       cursor: pointer;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    button:hover:not(:disabled) {
+      filter: brightness(1.08);
     }
     button:disabled {
-      opacity: 0.5;
+      opacity: 0.38;
       cursor: not-allowed;
     }
     button.secondary {
       background: transparent;
-      color: var(--fg);
-      border: 1px solid var(--input-border);
+      color: var(--text);
+      border: 1px solid var(--line);
+      font-weight: 600;
+    }
+    button.ghost-red {
+      background: transparent;
+      color: var(--red-soft);
+      border: 1px solid rgba(226, 61, 72, 0.45);
     }
     #status {
       min-height: 1.2em;
-      font-size: 12px;
+      font-size: 11.5px;
       color: var(--muted);
     }
-    #status.error { color: var(--vscode-errorForeground, #f44); }
+    #status.working { color: var(--cyan); }
+    #status.error { color: var(--red-soft); }
     textarea {
       width: 100%;
-      min-height: 220px;
+      min-height: 200px;
       flex: 1;
       resize: vertical;
-      padding: 8px;
-      background: var(--input-bg);
-      color: var(--fg);
-      border: 1px solid var(--input-border);
-      line-height: 1.4;
+      padding: 10px;
+      background: var(--bg-input);
+      color: var(--text);
+      border: 1px solid var(--line);
+      line-height: 1.45;
+      box-shadow: inset 0 0 0 1px rgba(94, 200, 255, 0.04);
     }
+    textarea::placeholder { color: #5a6976; }
     .hint {
       font-size: 11px;
       color: var(--muted);
-      line-height: 1.35;
+      line-height: 1.4;
+      margin: 0;
     }
   </style>
 </head>
 <body>
-  <h1>Textify Image</h1>
+  <div class="brand">
+    <img src="${iconUri}" alt="Textify Image" />
+    <div>
+      <h1><span>Textify</span> Image</h1>
+      <p>Local OCR · no API · no cloud</p>
+    </div>
+  </div>
+  <img class="cover" src="${coverUri}" alt="Textify Image cover" />
+
   <div
     id="dropzone"
     class="dropzone"
@@ -220,7 +348,9 @@ export class OcrPanelProvider implements vscode.WebviewViewProvider {
     role="button"
     aria-label="Paste or drop an image"
   >
-    <p><strong>Paste</strong> (Ctrl+V) or <strong>drop</strong> an image here</p>
+    <div class="corners"><span></span><span></span></div>
+    <div class="scanline"></div>
+    <p><strong>Paste</strong> (Ctrl+V) or <strong>drop</strong> an image</p>
     <p>or click to choose a file</p>
     <img id="preview" class="preview" alt="Selected image preview" />
   </div>
@@ -231,17 +361,17 @@ export class OcrPanelProvider implements vscode.WebviewViewProvider {
     <select id="lang" title="OCR language">
       <option value="eng" selected>English</option>
     </select>
-    <button id="clear" class="secondary" type="button">Clear</button>
+    <button id="clear" class="ghost-red" type="button">Clear</button>
   </div>
 
   <div id="status">Ready — paste a screenshot to extract text.</div>
-  <textarea id="result" placeholder="OCR text will appear here…" spellcheck="false"></textarea>
+  <textarea id="result" placeholder="Scanned text will appear here…" spellcheck="false"></textarea>
 
   <div class="row">
     <button id="copy" type="button" disabled>Copy</button>
-    <button id="insert" type="button" disabled>Insert into editor</button>
+    <button id="insert" class="secondary" type="button" disabled>Insert into editor</button>
   </div>
-  <p class="hint">Runs fully offline with Tesseract.js. For long text, crop or zoom the image for better accuracy.</p>
+  <p class="hint">Runs fully offline with Tesseract.js. Crop or zoom dense screenshots for better accuracy.</p>
 
   <script nonce="textifyImage">
     const vscode = acquireVsCodeApi();
@@ -255,12 +385,14 @@ export class OcrPanelProvider implements vscode.WebviewViewProvider {
     const insertBtn = document.getElementById('insert');
     const clearBtn = document.getElementById('clear');
 
-    function setStatus(text, isError) {
+    function setStatus(text, kind) {
       statusEl.textContent = text;
-      statusEl.classList.toggle('error', !!isError);
+      statusEl.classList.remove('error', 'working');
+      if (kind) statusEl.classList.add(kind);
     }
 
     function setBusy(busy) {
+      dropzone.classList.toggle('working', busy);
       copyBtn.disabled = busy || !resultEl.value.trim();
       insertBtn.disabled = busy || !resultEl.value.trim();
     }
@@ -268,7 +400,7 @@ export class OcrPanelProvider implements vscode.WebviewViewProvider {
     function recognize(dataUrl) {
       preview.src = dataUrl;
       preview.classList.add('visible');
-      setStatus('Running OCR…');
+      setStatus('Scanning image…', 'working');
       setBusy(true);
       resultEl.value = '';
       vscode.postMessage({
@@ -280,7 +412,7 @@ export class OcrPanelProvider implements vscode.WebviewViewProvider {
 
     function readFile(file) {
       if (!file || !file.type.startsWith('image/')) {
-        setStatus('Please paste or drop an image file.', true);
+        setStatus('Please paste or drop an image file.', 'error');
         return;
       }
       const reader = new FileReader();
@@ -357,13 +489,13 @@ export class OcrPanelProvider implements vscode.WebviewViewProvider {
       const msg = event.data;
       if (msg.type === 'result') {
         resultEl.value = msg.text || '';
-        setStatus(resultEl.value.trim() ? 'Done.' : 'No text detected.');
+        setStatus(resultEl.value.trim() ? 'Scan complete.' : 'No text detected.');
         setBusy(false);
       } else if (msg.type === 'error') {
-        setStatus(msg.message || 'OCR failed.', true);
+        setStatus(msg.message || 'OCR failed.', 'error');
         setBusy(false);
       } else if (msg.type === 'status') {
-        setStatus(msg.message || 'Working…');
+        setStatus(msg.message || 'Working…', 'working');
       }
     });
 
